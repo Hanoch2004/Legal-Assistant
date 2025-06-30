@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Assistance Chatbot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" 
+          integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" 
+          crossorigin="anonymous">
+    <style>
+      /* Enlarged chatbot container styling */
+      #chatbot-popup {
+        position: relative;
+        margin: 20px auto;
+        width: 80%; /* Increased width */
+        max-width: 1000px; /* optional max-width */
+        height: 600px; /* Increased height */
+        background-color: white;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      #chatbot-header {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 8px 8px 0 0;
+      }
+      #chatbot-body {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+      }
+      #user-input {
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <footer class="pt-5">
+      <div class="container">
+        <div class="row text-center">
+          <div class="col-lg-12">
+            <h4>Legal Help Chatbot</h4>
+            <p>Get quick legal assistance for Indian law queries.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Enlarged Chatbot Popup Container -->
+    <div id="chatbot-popup">
+      <div id="chatbot-header">
+        <span>Legal Help Chatbot</span>
+      </div>
+      <div id="chatbot-body">
+        <!-- Messages will appear here -->
+        <div id="chatbox-messages" style="padding: 10px; overflow-y: auto; height: 480px;"></div>
+      </div>
+      <div style="display: flex; padding: 10px;">
+        <input id="user-input" type="text" class="form-control" placeholder="Ask me anything...">
+        <button id="send-message" class="btn btn-primary ms-2">Send</button>
+      </div>
+    </div>
+
+    <!-- JavaScript to handle chatbot interaction -->
+    <script>
+      const sendMessageButton = document.getElementById('send-message');
+      const userInput = document.getElementById('user-input');
+      const chatboxMessages = document.getElementById('chatbox-messages');
+
+      sendMessageButton.addEventListener('click', async () => {
+        const message = userInput.value.trim();
+        if (message) {
+          addMessageToChat('You', message);
+          userInput.value = ''; // Clear input field
+          try {
+            const response = await fetch('/ask', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ question: message })
+            });
+            const data = await response.json();
+            addMessageToChat('Bot', data.answer);
+          } catch (error) {
+            addMessageToChat('Bot', 'Error contacting the server.');
+          }
+        }
+      });
+
+      // Add message to chatbox
+      function addMessageToChat(sender, message) {
+        const messageElement = document.createElement('div');
+        messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatboxMessages.appendChild(messageElement);
+        chatboxMessages.scrollTop = chatboxMessages.scrollHeight; // Auto-scroll to the bottom
+      }
+    </script>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybP4fD2QexB9l5gaS0rDkZtI0qRIpaN6xnzKjKjq11ZgH4pR8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0z5zfy0NSfSTmFFw7uR5j9B6xg2G9gmR8EXdLXbZt9iCxWnG" crossorigin="anonymous"></script>
+  </body>
+</html>
